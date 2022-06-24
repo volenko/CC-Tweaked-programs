@@ -129,10 +129,13 @@ function eat()
         return
     end
     for i=1, MAX_SLOTS do
-        if turtle.getItemDetail(i).name == "minecraft:coal" then
+        local detail = turtle.getItemDetail(i)
+        if detail ~= nil and detail.name == "minecraft:coal" then
+            turtle.select(i)
             turtle.refuel()
         end
     end
+    turtle.select(1)
 end
 
 
