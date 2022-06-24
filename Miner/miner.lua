@@ -12,10 +12,19 @@ local list = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
               "minecraft:emerald_ore", "minecraft:deepslate_emerald_ore",
               "minecraft:lapis_ore", "minecraft:deepslate_lapis_ore",
               "minecraft:diamond_ore", "minecraft:deepslate_diamond_ore",
-              "minecraft:chest"}
-local maxSlots = 14
-local bucketSlot = 15
-local chestSlot = 16
+              "minecraft:nether_gold_ore", "minecraft:nether_quarz_ore",
+              "minecraft:ancient_debris"}
+local MAX_SLOTS = 14
+local BUCKET_SLOT = 15
+local CHEST_SLOT = 16
+
+if (fs.exists("ores.json")) then
+    local file = file.open("ores.json", "r")
+    list = textutils.unserialiseJSON(file.readAll())
+    file.close()
+else
+    print("List of ores not found. I will mine default minecraft ores.")
+end
 
 function drink(dir)
     local exist, block
@@ -29,7 +38,7 @@ function drink(dir)
     if exist == false or block.name ~= "minecraft:lava" then
         return
     end
-    turtle.select(bucketSlot)
+    turtle.select(BUCKET_SLOT)
     turtle.equipRight()
     if dir == up then
         turtle.placeUp()
@@ -119,7 +128,7 @@ function eat()
     if turtle.getFuelLevel() > 5000 then
         return
     end
-    for i=1, maxSlots do
+    for i=1, MAX_SLOTS do
         if turtle.getItemDetail(i).name == "minecraft:coal" then
             turtle.refuel()
         end
@@ -128,13 +137,13 @@ end
 
 
 function drop()
-    turtle.select(chestSlot)
+    turtle.select(CHEST_SLOT)
     turtle.placeDown()
-    for i=1, maxSlots do
+    for i=1, MAX_SLOTS do
         turtle.select(i)
         turtle.dropDown()
     end
-    turtle.select(chestSlot)
+    turtle.select(CHEST_SLOT)
     turtle.digDown()
     turtle.select(1)
 end

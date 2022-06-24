@@ -1,0 +1,7 @@
+["minecraft:coal_ore", "minecraft:deepslate_coal_ore", "minecraft:iron_ore", "minecraft:deepslate_iron_ore", "minecraft:copper_ore", "minecraft:deepslate_copper_ore",
+    "minecraft:gold_ore", "minecraft:deepslate_gold_ore", "minecraft:redstone_ore", "minecraft:deepslate_redstone_ore", "minecraft:emerald_ore", "minecraft:deepslate_emerald_ore",
+    "minecraft:lapis_ore", "minecraft:deepslate_lapis_ore", "minecraft:diamond_ore", "minecraft:deepslate_diamond_ore", "minecraft:nether_gold_ore", "minecraft:nether_quarz_ore",
+    "minecraft:ancient_debris", "thermal:apatite_ore", "thermal:deepslate_apatite_ore", "thermal:cinnabar_ore", "thermal:deepslate_cinnabar_ore", "thermal:niter_ore", 
+    "thermal:deepslate_niter_ore", "thermal:sulfur_ore", "thermal:deepslate_sulfur_ore", "thermal:tin_ore", "thermal:deepslate_tin_ore", "thermal:lead_ore", "thermal:deepslate_lead_ore",
+    "thermal:silver_ore", "thermal:deepslate_silver_ore", "thermal:nickel_ore", "thermal:deepslate_nickel_ore", "tinkers_reforged:aluminum_ore", "tinkers_reforged:deepslate_aluminum_ore",
+    "tinkers_reforged:kepu_ore",  "tconstruct:cobalt_ore", "nourished_end:malachite_ore", "nourished_end:end_iron_ore"]
