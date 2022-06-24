@@ -1,9 +1,12 @@
-local forward = 1
-local back    = 2
-local up      = 3
-local down    = 4
-local left    = 5
-local right   = 6
+local FORWARD = 1
+local BACK    = 2
+local UP      = 3
+local DOWN    = 4
+local LEFT    = 5
+local RIGHT   = 6
+local MAX_SLOTS = 14
+local BUCKET_SLOT = 15
+local CHEST_SLOT = 16
 local list = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
               "minecraft:iron_ore", "minecraft:deepslate_iron_ore",
               "minecraft:copper_ore", "minecraft:deepslate_copper_ore",
@@ -14,9 +17,6 @@ local list = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
               "minecraft:diamond_ore", "minecraft:deepslate_diamond_ore",
               "minecraft:nether_gold_ore", "minecraft:nether_quarz_ore",
               "minecraft:ancient_debris"}
-local MAX_SLOTS = 14
-local BUCKET_SLOT = 15
-local CHEST_SLOT = 16
 
 if (fs.exists("ores.json")) then
     local file = file.open("ores.json", "r")
@@ -28,9 +28,9 @@ end
 
 function drink(dir)
     local exist, block
-    if dir == up then
+    if dir == UP then
         exist, block = turtle.inspectUp()
-    elseif dir == down then
+    elseif dir == DOWN then
         exist, block = turtle.inspectDown()
     else
         exist, block = turtle.inspect()
@@ -40,9 +40,9 @@ function drink(dir)
     end
     turtle.select(BUCKET_SLOT)
     turtle.equipRight()
-    if dir == up then
+    if dir == UP then
         turtle.placeUp()
-    elseif dir == down then
+    elseif dir == DOWN then
         turtle.placeDown()
     else
         turtle.place()
@@ -54,31 +54,31 @@ end
 
 
 function go(dir)
-    if dir == back then
+    if dir == BACK then
         turtle.turnLeft()
         turtle.turnLeft()
     end
-    if dir == left then
+    if dir == LEFT then
         turtle.turnLeft()
     end
-    if dir == right then
+    if dir == RIGHT then
         turtle.turnRight()
     end
     for i=1, 16 do
-        if dir == up then
-            drink(up)
+        if dir == UP then
+            drink(UP)
             turtle.digUp()
             if turtle.up() == true then
                 return true
             end
-        elseif dir == down then
-            drink(down)
+        elseif dir == DOWN then
+            drink(DOWN)
             turtle.digDown()
             if turtle.down() == true then
                 return true
             end
         else
-            drink(forward)
+            drink(FORWARD)
             turtle.dig()
             if turtle.forward() == true then
                 return true
@@ -106,11 +106,11 @@ end
 function mine()
     local counter = 0
     while true do
-        if not go(down) then
+        if not go(DOWN) then
             break
         end
         for i=1, 4 do
-            drink(forward)
+            drink(FORWARD)
             if inList() then
                 turtle.dig()
             end
@@ -119,7 +119,7 @@ function mine()
         counter = counter + 1
     end
     for i=1, counter do
-        go(up)
+        go(UP)
     end
 end
 
@@ -150,9 +150,9 @@ end
 
 
 function nextMine()
-    go(forward)
-    go(forward)
-    go(forward)
+    go(FORWARD)
+    go(FORWARD)
+    go(FORWARD)
 end
 
 for i=1, 10 do
