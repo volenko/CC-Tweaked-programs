@@ -19,7 +19,7 @@ local list = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
               "minecraft:ancient_debris"}
 
 if (fs.exists("ores.json")) then
-    local file = file.open("ores.json", "r")
+    local file = fs.open("ores.json", "r")
     list = textutils.unserialiseJSON(file.readAll())
     file.close()
 else

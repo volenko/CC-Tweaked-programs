@@ -126,7 +126,7 @@ function refuel(layer)
     fuelNeeded = fuelNeeded * 2.1 + 200
     if turtle.getFuelLevel() < fuelNeeded then
         while true do
-            print("Add some fuel ("..(fuelNeeded - turtle.getFuelLevel()).." left) and perss any button.")
+            print("Add some fuel ("..(fuelNeeded - turtle.getFuelLevel()).." left to add) and perss any button.")
             os.pullEvent("key")
             for i = 1, 16, 1 do
                 turtle.select(i)

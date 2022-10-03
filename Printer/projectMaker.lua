@@ -33,16 +33,16 @@ if fs.isDir(projectName) then
     return
 end
 
-fs.makeDir(projectName)
-local file = fs.open("patterns/"..projectName.."/"..projectName..".ini", "a")
+fs.makeDir("Printer/"..projectName)
+local file = fs.open("Printer/"..projectName.."/"..projectName..".ini", "a")
 local iterator = 1
 while true do
     shell.run("/rom/programs/fun/advanced/paint", projectName.."/"..projectName.."_"..iterator..".img")
-    if not fs.exists("patterns/"..projectName.."/"..projectName.."_"..iterator..".img") then
+    if not fs.exists("Printer/"..projectName.."/"..projectName.."_"..iterator..".img") then
         break
     end
 
-    file.writeLine(appendIni("patterns/"..projectName.."/"..projectName.."_"..iterator..".img"))
+    file.writeLine(appendIni("Printer/"..projectName.."/"..projectName.."_"..iterator..".img"))
     file.flush()
     iterator = iterator + 1
 end
