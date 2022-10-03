@@ -7,7 +7,7 @@ local RIGHT   = 6
 local MAX_SLOTS = 14
 local BUCKET_SLOT = 15
 local CHEST_SLOT = 16
-local list = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
+local listOres = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
               "minecraft:iron_ore", "minecraft:deepslate_iron_ore",
               "minecraft:copper_ore", "minecraft:deepslate_copper_ore",
               "minecraft:gold_ore", "minecraft:deepslate_gold_ore",
@@ -15,15 +15,15 @@ local list = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
               "minecraft:emerald_ore", "minecraft:deepslate_emerald_ore",
               "minecraft:lapis_ore", "minecraft:deepslate_lapis_ore",
               "minecraft:diamond_ore", "minecraft:deepslate_diamond_ore",
-              "minecraft:nether_gold_ore", "minecraft:nether_quarz_ore",
+              "minecraft:nether_gold_ore", "minecraft:nether_quartz_ore",
               "minecraft:ancient_debris"}
 
 if (fs.exists("ores.json")) then
     local file = fs.open("ores.json", "r")
-    list = textutils.unserialiseJSON(file.readAll())
+    listOres = textutils.unserialiseJSON(file.readAll())
     file.close()
 else
-    print("List of ores not found. I will mine default minecraft ores.")
+    print("File \"ores.json\" is missing. I will mine default minecraft ores.")
 end
 
 function drink(dir)
@@ -89,12 +89,10 @@ function go(dir)
 end
 
 
-function inList()
-    local exist, block = turtle.inspect()
-    if exist == false then
-        return false
-    end
-    for _, name in ipairs(list) do
+function inList(exist, block)
+    if exist == false then return false end
+
+    for _, name in ipairs(listOres) do
         if name == block.name then
             return true
         end
@@ -104,30 +102,26 @@ end
 
 
 function mine()
-    local counter = 0
-    while true do
-        if not go(DOWN) then
-            break
-        end
+    local depth = 0
+    while go(DOWN) do
         for i=1, 4 do
             drink(FORWARD)
-            if inList() then
+            if inList(turtle.inspect()) then
                 turtle.dig()
             end
             turtle.turnLeft()
         end
-        counter = counter + 1
+        depth = depth + 1
     end
-    for i=1, counter do
+    for i=1, depth do
         go(UP)
     end
 end
 
 
 function eat()
-    if turtle.getFuelLevel() > 5000 then
-        return
-    end
+    if turtle.getFuelLevel() > 5000 then return end
+    
     for i=1, MAX_SLOTS do
         local detail = turtle.getItemDetail(i)
         if detail ~= nil and detail.name == "minecraft:coal" then
