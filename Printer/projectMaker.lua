@@ -2,8 +2,8 @@ local args = {...}
 local projectName = args[1]
 local path = fs.getDir(shell.getRunningProgram())
 
-function appendIni(path)
-    local image = paintutils.loadImage(path)
+function appendIni(pathIni)
+    local image = paintutils.loadImage(pathIni)
     local ini = {}
     for _, row in pairs(image) do
         for _, block in pairs(row) do
