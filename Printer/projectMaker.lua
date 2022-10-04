@@ -1,5 +1,6 @@
 local args = {...}
 local projectName = args[1]
+local path = fs.getDir(shell.getRunningProgram())
 
 function appendIni(path)
     local image = paintutils.loadImage(path)
@@ -33,16 +34,16 @@ if fs.isDir(projectName) then
     return
 end
 
-fs.makeDir("Printer/"..projectName)
-local file = fs.open("Printer/"..projectName.."/"..projectName..".ini", "a")
+fs.makeDir(path.."/blueprints/"..projectName)
+local file = fs.open(path.."/blueprints/"..projectName.."/"..projectName..".ini", "a")
 local iterator = 1
 while true do
     shell.run("/rom/programs/fun/advanced/paint", projectName.."/"..projectName.."_"..iterator..".img")
-    if not fs.exists("Printer/"..projectName.."/"..projectName.."_"..iterator..".img") then
+    if not fs.exists(path.."/blueprints/"..projectName.."/"..projectName.."_"..iterator..".img") then
         break
     end
 
-    file.writeLine(appendIni("Printer/"..projectName.."/"..projectName.."_"..iterator..".img"))
+    file.writeLine(appendIni(path.."/blueprints/"..projectName.."/"..projectName.."_"..iterator..".img"))
     file.flush()
     iterator = iterator + 1
 end
