@@ -33,7 +33,7 @@ local log = fs.open("new.log", "a")
 
 
 function newLogEntry(text)
-    log.writeLine(os.day().." - "..textutils.formatTime(os.time(), true)..": "..text)
+    log.writeLine("Day "..os.day().." - "..textutils.formatTime(os.time(), true)..": "..text)
     log.flush()
 end
 
@@ -171,7 +171,7 @@ end
 
 
 
-newLogEntry("Checking for ores.json...")
+newLogEntry("Checking for ores.json.")
 if (fs.exists("ores.json")) then
     local file = fs.open("ores.json", "r")
     listOres = textutils.unserialiseJSON(file.readAll())
@@ -182,12 +182,12 @@ else
     newLogEntry("No list found. Default list is used.")
 end
 
-newLogEntry("Starting to mine...")
+newLogEntry("Starting to mine.")
 for i=1, 10 do
     newLogEntry(i.." cycle:")
-    if turtle.getFuelLevel() > 500 then 
+    if turtle.getFuelLevel() < 500 then
         print("Not enough fuel.\nAvailable: "..turtle.getFuelLevel().."\nRequired: 500.")
-        newLogEntry("Not enaugh fuel. Fuel level is "..turtle.getFuelLevel())
+        newLogEntry("Not enough fuel. Fuel level is "..turtle.getFuelLevel())
         break
     end
     newLogEntry("New shaft.")
