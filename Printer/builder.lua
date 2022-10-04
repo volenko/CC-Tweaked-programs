@@ -8,6 +8,7 @@ local bottomLayer = args[2]
 local topLayer = args[3]
 local building = {}
 local layers = 1
+local path = fs.getDir(shell.getRunningProgram())
 
 function calc(layer, ini) --calculates required blocks
     local counts = {[0] = 0, [1] = 0, [2] = 0, [4] = 0, [8] = 0,
@@ -202,7 +203,7 @@ if topLayer ~= nil then
 end
 
 while true do
-    local image = project.."/"..project.."_"..layers..".img"
+    local image = path.."/blueprints/"..project.."/"..project.."_"..layers..".img"
     if fs.exists(image) then
         table.insert(building, paintutils.loadImage(image))
         layers = layers + 1
@@ -216,12 +217,12 @@ if layers == 0 then
     print("There are no layer files.")
     return
 end
-if not fs.exists(project.."/"..project..".ini") then
+if not fs.exists(path.."/blueprints/"..project.."/"..project..".ini") then
     print("There is no ini file.")
     return
 end
 
-local blocks = io.lines(project.."/"..project..".ini")
+local blocks = io.lines(path.."/blueprints/"..project.."/"..project..".ini")
 if bottomLayer == nil then
     bottomLayer = 1
 end
