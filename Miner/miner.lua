@@ -1,3 +1,4 @@
+local args = {...}
 local FORWARD = 1
 local BACK    = 2
 local UP      = 3
@@ -18,17 +19,11 @@ local listOres = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
                   "minecraft:nether_gold_ore", "minecraft:nether_quartz_ore",
                   "minecraft:ancient_debris"}
 
-if (fs.exists("eldest.log")) then
-    fs.delete("eldest.log")
-end
 
-if (fs.exists("old.log")) then
-    fs.move("old.log", "eldest.log")
-end
 
-if (fs.exists("new.log")) then
-    fs.move("new.log", "old.log")
-end
+if (fs.exists("eldest.log")) then fs.delete("eldest.log") end
+if (fs.exists("old.log")) then fs.move("old.log", "eldest.log") end
+if (fs.exists("new.log")) then fs.move("new.log", "old.log") end
 local log = fs.open("new.log", "a")
 
 
@@ -69,12 +64,9 @@ function go(dir)
         turtle.turnLeft()
         turtle.turnLeft()
     end
-    if dir == LEFT then
-        turtle.turnLeft()
-    end
-    if dir == RIGHT then
-        turtle.turnRight()
-    end
+    if dir == LEFT then turtle.turnLeft() end
+    if dir == RIGHT then turtle.turnRight() end
+
     for i=1, 16 do
         if dir == UP then
             drink(UP)
@@ -166,7 +158,26 @@ end
 function nextMine()
     go(FORWARD)
     go(FORWARD)
+    turtle.turnRight()
     go(FORWARD)
+    turtle.turnLeft()
+end
+
+
+function shaft()
+    if turtle.getFuelLevel() < 500 then
+        print("Not enough fuel.\nAvailable: "..turtle.getFuelLevel().."\nRequired: 500.")
+        newLogEntry("Not enough fuel. Fuel level is "..turtle.getFuelLevel())
+        return false
+    end
+    newLogEntry("Starting a shaft.")
+    mine()
+    newLogEntry("Shaft complete.")
+    newLogEntry("Refueling.")
+    eat()
+    newLogEntry("Dropping stuff.")
+    drop()
+    return true
 end
 
 
@@ -179,26 +190,46 @@ if (fs.exists("ores.json")) then
     newLogEntry("New list is loaded.")
 else
     print("File \"ores.json\" is missing. I will mine default minecraft ores.")
-    newLogEntry("No list found. Default list is used.")
+    newLogEntry("Default list is used.")
 end
 
-newLogEntry("Starting to mine.")
-for i=1, 10 do
-    newLogEntry(i.." cycle:")
-    if turtle.getFuelLevel() < 500 then
-        print("Not enough fuel.\nAvailable: "..turtle.getFuelLevel().."\nRequired: 500.")
-        newLogEntry("Not enough fuel. Fuel level is "..turtle.getFuelLevel())
-        break
+newLogEntry("Checking for dimensions.")
+local length = 3
+local width = 3
+if args[1] ~= nil and args[2] ~= nil and tonumber(args[1]) > 0 and tonumber(args[2]) > 0 then
+    length = tonumber(args[1])
+    width = tonumber(args[2])
+    newLogEntry("New dimensions.\nLength is: "..length..".\nWidth is: "..width..".")
+else
+    print("No dimension sizes were entered or bad input. I will use default dimensions.")
+    newLogEntry("Default dimensions are used.")
+end
+
+newLogEntry("Starting to work on a field "..length.."x"..width..".")
+for i = 1, width do
+    for j = 1, length - 1 do
+        shaft()
+        nextMine()
     end
-    newLogEntry("New shaft.")
-    mine()
-    newLogEntry("Refueling.")
-    eat()
-    newLogEntry("Dropping stuff.")
-    drop()
-    newLogEntry("Moving to next mine.")
+    shaft()
+    if i == width then break end
+
+    if i % 2 == 1 then turtle.turnRight() else turtle.turnLeft() end
     nextMine()
-    newLogEntry("Cycle complete.")
+    if i % 2 == 1 then turtle.turnRight() else turtle.turnLeft() end
+end
+
+newLogEntry("Going back to start.")
+if width % 2 == 1 then
+    turtle.turnLeft()
+    turtle.turnLeft()
+    for i = 1, length - 1 do
+        nextMine()
+    end
+end
+turtle.turnRight()
+for i = 1, width - 1 do
+    nextMine()
 end
 
 newLogEntry("Work is done.")
