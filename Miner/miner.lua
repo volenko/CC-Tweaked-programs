@@ -1,14 +1,16 @@
+--          program for mining a quarry         --
+
+FORWARD = 1
+BACK    = 2
+UP      = 3
+DOWN    = 4
+LEFT    = 5
+RIGHT   = 6
+MAX_SLOTS = 14
+BUCKET_SLOT = 15
+CHEST_SLOT = 16
 local args = {...}
-local FORWARD = 1
-local BACK    = 2
-local UP      = 3
-local DOWN    = 4
-local LEFT    = 5
-local RIGHT   = 6
-local MAX_SLOTS = 14
-local BUCKET_SLOT = 15
-local CHEST_SLOT = 16
-local listOres = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
+local listOres = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",         --default ores for mining
                   "minecraft:iron_ore", "minecraft:deepslate_iron_ore",
                   "minecraft:copper_ore", "minecraft:deepslate_copper_ore",
                   "minecraft:gold_ore", "minecraft:deepslate_gold_ore",
@@ -20,19 +22,21 @@ local listOres = {"minecraft:coal_ore", "minecraft:deepslate_coal_ore",
                   "minecraft:ancient_debris"}
 
 
-
+-- checks logs 
 if (fs.exists("eldest.log")) then fs.delete("eldest.log") end
 if (fs.exists("old.log")) then fs.move("old.log", "eldest.log") end
 if (fs.exists("new.log")) then fs.move("new.log", "old.log") end
 local log = fs.open("new.log", "a")
 
 
-function newLogEntry(text)
+-- starts a new log
+local function newLogEntry(text)
     log.writeLine("Day "..os.day().." - "..textutils.formatTime(os.time(), true)..": "..text)
     log.flush()
 end
 
-function drink(dir)
+-- consumes liquid fuel from direction
+local function drink(dir)
     local exist, block
     if dir == UP then
         exist, block = turtle.inspectUp()
@@ -58,8 +62,8 @@ function drink(dir)
     turtle.select(1)
 end
 
-
-function go(dir)
+-- goes to entered direction
+local function go(dir)
     if dir == BACK then
         turtle.turnLeft()
         turtle.turnLeft()
@@ -67,7 +71,7 @@ function go(dir)
     if dir == LEFT then turtle.turnLeft() end
     if dir == RIGHT then turtle.turnRight() end
 
-    for i=1, 16 do
+    for i=1, 16 do                                      --tries to move 16 times to entered direction then stops the programm
         if dir == UP then
             drink(UP)
             turtle.digUp()
@@ -92,7 +96,8 @@ function go(dir)
 end
 
 
-function inList(exist, block)
+-- checks if a stone is valuable 
+local function inList(exist, block)
     if exist == false then return false end
 
     for _, name in ipairs(listOres) do
@@ -104,7 +109,8 @@ function inList(exist, block)
 end
 
 
-function mine()
+-- creates a mineshaft down to the end of the world
+local function mine()
     local depth = 0
     while go(DOWN) do
         newLogEntry("Level "..depth..".")
@@ -124,7 +130,8 @@ function mine()
 end
 
 
-function eat()
+-- refuels with hard fuel if fuel level is less than 5000
+local function eat()
     if turtle.getFuelLevel() > 5000 then
         newLogEntry("Fed up with coal.")
         return
@@ -142,7 +149,8 @@ function eat()
 end
 
 
-function drop()
+-- puts a chest under itself and stocks all items in it
+local function drop()
     turtle.select(CHEST_SLOT)
     turtle.placeDown()
     for i=1, MAX_SLOTS do
@@ -155,7 +163,8 @@ function drop()
 end
 
 
-function nextMine()
+-- goes to the next hole (like a chess knight)
+local function nextMine()
     go(FORWARD)
     go(FORWARD)
     turtle.turnRight()
@@ -164,7 +173,8 @@ function nextMine()
 end
 
 
-function shaft()
+-- calculates if it is enough fuel for a shaft and starts create one 
+local function shaft()
     if turtle.getFuelLevel() < 500 then
         print("Not enough fuel.\nAvailable: "..turtle.getFuelLevel().."\nRequired: 500.")
         newLogEntry("Not enough fuel. Fuel level is "..turtle.getFuelLevel())
@@ -181,9 +191,9 @@ function shaft()
 end
 
 
-
+-- main part-------------------------------------------------------------
 newLogEntry("Checking for ores.json.")
-if (fs.exists("ores.json")) then
+if (fs.exists("ores.json")) then                    --updates ores list if its json is present
     local file = fs.open("ores.json", "r")
     listOres = textutils.unserialiseJSON(file.readAll())
     file.close()
@@ -193,7 +203,7 @@ else
     newLogEntry("Default list is used.")
 end
 
-newLogEntry("Checking for dimensions.")
+newLogEntry("Checking for dimensions.")             --checks if dimensions of a quarry is entered, else uses default values
 local length = 3
 local width = 3
 if args[1] ~= nil and args[2] ~= nil and tonumber(args[1]) > 0 and tonumber(args[2]) > 0 then
@@ -204,7 +214,7 @@ else
     print("No dimension sizes were entered or bad input. I will use default dimensions.")
     newLogEntry("Default dimensions are used.")
 end
-
+                                                    --starts to make a quarry
 newLogEntry("Starting to work on a field "..length.."x"..width..".")
 for i = 1, width do
     for j = 1, length - 1 do
@@ -219,7 +229,7 @@ for i = 1, width do
     if i % 2 == 1 then turtle.turnRight() else turtle.turnLeft() end
 end
 
-newLogEntry("Going back to start.")
+newLogEntry("Going back to start.")                 --returns home
 if width % 2 == 1 then
     turtle.turnLeft()
     turtle.turnLeft()

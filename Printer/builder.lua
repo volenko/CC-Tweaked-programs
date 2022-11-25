@@ -1,4 +1,6 @@
-local chest = peripheral.find("minecraft:chest")
+--          program build a building via blueprint
+
+local chest = peripheral.find("minecraft:chest")                            -- connects to the chest with building items
 local modem = peripheral.find("modem")
 local turtleName = modem.getNameLocal()
 
@@ -10,7 +12,8 @@ local building = {}
 local layers = 1
 local path = fs.getDir(shell.getRunningProgram())
 
-function calc(layer, ini) --calculates required blocks
+-- calculates required for a layer blocks
+local function calc(layer, ini) 
     local counts = {[0] = 0, [1] = 0, [2] = 0, [4] = 0, [8] = 0,
                     [16] = 0, [32] = 0, [64] = 0, [128] = 0,
                     [256] = 0, [512] = 0, [1024] = 0, [2048] = 0,
@@ -27,7 +30,8 @@ function calc(layer, ini) --calculates required blocks
     return res
 end
 
-function gather(blocks)
+-- collects materials from the chest or waits untill you add them
+local function gather(blocks)
     local emptySlots = 16
     while true do
         for slot, item in pairs(chest.list()) do
@@ -56,7 +60,8 @@ function gather(blocks)
     return blocks
 end
 
-function home(block, row, curLevel)
+-- goes to the starting position
+local function home(block, row, curLevel)
     turtle.turnRight()
     turtle.turnRight()
     for i = 1, block, 1 do
@@ -74,7 +79,8 @@ function home(block, row, curLevel)
     turtle.turnRight()
 end
 
-function spot(block, row, curLevel)
+-- returns to the spot turtle stopped working at
+local function spot(block, row, curLevel)
     for i = 1, curLevel - 1, 1 do
         turtle.up()
     end
@@ -88,7 +94,8 @@ function spot(block, row, curLevel)
     end
 end
 
-function blocksLeft(blocks)
+-- checks amount of blocks to place
+local function blocksLeft(blocks)
     for _, amount in pairs(blocks) do
         if amount ~= 0 then
             return true
@@ -97,7 +104,8 @@ function blocksLeft(blocks)
     return false
 end
 
-function selectBlock(name)
+-- selects block from inventory
+local function selectBlock(name)
     for i = 1, 16, 1 do
         local item = turtle.getItemDetail(i)
         if item ~= nil and item.name == name then
@@ -108,7 +116,8 @@ function selectBlock(name)
     return false
 end
 
-function empty()
+-- checks is inventory empty 
+local function isEmpty()
     for i = 1, 16, 1 do
         if turtle.getItemDetail(i) ~= nil then
             return false
@@ -117,7 +126,8 @@ function empty()
     return true
 end
 
-function refuel(layer)
+-- calculates amount of fuel needed for a layer and waits to be refueled
+local function refuel(layer)
     local fuelNeeded = 0
     for _, row in pairs(layer) do
         for _, _ in pairs(row) do
@@ -140,20 +150,21 @@ function refuel(layer)
     end
 end
 
-function build(layer, ini, curLevel)
+-- starts to build a layer
+local function build(layer, ini, curLevel)
     local blocks = calc(layer, ini)
     refuel(layer)
     while true do
         blocks = gather(blocks)
-        for i = 1, curLevel - 1, 1 do
+        for i = 1, curLevel - 1, 1 do                                       -- moves to the current heigth of building
             turtle.up()
         end
         local colLen = 0
-        for rowN, row in pairs(layer) do
+        for rowN, row in pairs(layer) do                                    -- goes forward and backwards and placing building blocks under itself like a 3D printer
             local rowLen = 0
             for blockN, block in pairs(row) do
                 turtle.forward()
-                if empty() then
+                if isEmpty() then
                     home(blockN, rowN, curLevel)
                     blocks = gather(blocks)
                     spot(blockN, rowN, curLevel)
@@ -177,14 +188,14 @@ function build(layer, ini, curLevel)
             turtle.forward()
             turtle.turnLeft()
         end
-        home(0, colLen + 1, curLevel)
+        home(0, colLen + 1, curLevel)                                       -- goes home
         if not blocksLeft(blocks) then
-            break
+            break                                                           -- stops building a layer
         end
     end
 end
 
-
+                                                                            -- checks input for validity
 if  project == nil then
     print("Bad argument #1. String project name required.")
     return
@@ -202,7 +213,7 @@ if topLayer ~= nil then
     end
 end
 
-while true do
+while true do                                                               -- checks if blueprint exists and unpacks it 
     local image = path.."/blueprints/"..project.."/"..project.."_"..layers..".img"
     if fs.exists(image) then
         table.insert(building, paintutils.loadImage(image))
@@ -212,8 +223,8 @@ while true do
         break
     end
 end
-
-if layers == 0 then
+                                                                             
+if layers == 0 then                                                         -- checks if blueprint is valid
     print("There are no layer files.")
     return
 end
@@ -222,20 +233,15 @@ if not fs.exists(path.."/blueprints/"..project.."/"..project..".ini") then
     return
 end
 
-local blocks = io.lines(path.."/blueprints/"..project.."/"..project..".ini")
-if bottomLayer == nil then
+if bottomLayer == nil then                                                  -- enters default numbers if user didn't enter them
     bottomLayer = 1
 end
 if topLayer == nil then
     topLayer = layers
 end
 
-for i = 1, bottomLayer - 1, 1 do
-    blocks()
-end
-
-for layer = bottomLayer, topLayer do
-    local ini = blocks()
+for layer = bottomLayer, topLayer do                                        -- starts to build a building
+    local ini = io.lines(path.."/blueprints/"..project.."/"..project..".ini")    -- unpacks ini
     if ini == nil then
         break
     end
